@@ -25,7 +25,7 @@ damages <- read.csv("damages.csv")
 damages$warming2 <- damages$warming^2
 
 #fit quadratic regression model
-quadmodel <- lm(damages ~ warming + warming2, data=damages)
+quadmodel <- lm(damages ~ warming + warming2 -1, data=damages)
 
 summary(quadmodel)
 
@@ -42,7 +42,7 @@ ggplot(data = damages, aes(x = warming, y = damages)) +
               color = "darkred",
               ) +
     labs(y = "Financial Damages ($)", title = "Estimated annual total damages from climate change based on warming", x = "Degrees of Warming (C)") +
-    theme_minimal()
+    theme_minimal() 
 
 #plot with quad regression 
 plot(damages$warming, damages$damages) +
