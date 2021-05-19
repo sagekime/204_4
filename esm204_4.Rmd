@@ -55,22 +55,39 @@ ggplot(data = damages, aes(x = warming, y = damages)) +
 ### 2. Damages in each year under the baseline climate and pulse scenarios
 
 ```{r}
+#Damages WITHOUT pulse
+
 # Name coefficients
 a <- quadmodel$coefficients[[1]]
 b <- quadmodel$coefficients[[2]]
 
 #create function
-
 base_damage <- function(x, quadmodel) {
   baseline_damage <- quadmodel$coefficients[[1]]*x + quadmodel$coefficients[[2]]*x^2
   return(baseline_damage)
 }
 
+#test fuction - create vector
 base_damage(warming$warming_baseline, quadmodel)
 
+#convert vector to variable in warming dataset
+warming$damages_baseline <- base_damage(warming$warming_baseline, quadmodel)
 
-#create new variable
-warming$baseline_damage <- (-1.035e+12(warming$warming_baseline) + 1.94e+13(warming$warming_baseline)^2)
+
+#Damages WITH pulse
+
+#create function
+pul_damage <- function(x, quadmodel) {
+  pulse_damage <- quadmodel$coefficients[[1]]*x + quadmodel$coefficients[[2]]*x^2
+  return(pulse_damage)
+}
+
+#test fuction - create vector
+pul_damage(warming$warming_pulse, quadmodel)
+
+#convert vector to variable in warming dataset
+warming$damages_pulse <- pul_damage(warming$warming_pulse, quadmodel)
+
 
 ```
 
