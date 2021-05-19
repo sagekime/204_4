@@ -7,6 +7,10 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+library(here)
+options(scipen = 0)
 ```
 
 
@@ -16,6 +20,16 @@ knitr::opts_chunk$set(echo = TRUE)
 # Read in data
 warming <- read.csv("warming.csv")
 damages <- read.csv("damages.csv")
+
+
+ggplot(data = damages, aes(x = warming, y = damages)) +
+  geom_point(alpha = .5,
+              width = 1.5,
+              size = 2,
+              color = "darkred",
+              ) +
+    labs(y = "Financial Damages ($)", title = "Estimated annual total damages from climate change based on warming", x = "Degrees of Warming (C)") +
+    theme_minimal() 
 
 
 ```
