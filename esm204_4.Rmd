@@ -108,6 +108,9 @@ warming$damages_ton <- warming$damages_diff/35e9
 
 
 plot(warming$year, warming$damages_baseline) #DO ALL PLOTS IN GGPLOT
+plot(warming$year, warming$damages_pulse)
+plot(warming$year, warming$damages_diff)
+plot(warming$year, warming$damages_ton)
 ```
 
 
