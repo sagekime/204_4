@@ -216,7 +216,12 @@ warming <- warming %>%
 warming$damages_baseline2050 <- damages_model(warming$warming_baseline_2050)
 
 #Calculate PV of policy B
-B_baseline <- PV_calc(warming$damages_baseline2050, 0.02)
+B_baseline <- PV_calc(warming$damages_baseline2050, 0.02) #PV is expected value bc only one option
+
+
+#Subtract cost of policy A - policy B (SOS - CHECK THIS)
+max_x <- expected_value - B_baseline
+max_x
 
 ```
 
