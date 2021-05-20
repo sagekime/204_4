@@ -25,7 +25,7 @@ damages <- read.csv("damages.csv")
 damages$warming2 <- damages$warming^2
 
 #fit quadratic regression model
-quadmodel <- lm(damages ~ warming + warming2 -1, data=damages)
+quadmodel <- lm(damages ~ warming + warming2 +0, data=damages)
 
 summary(quadmodel)
 
@@ -40,6 +40,11 @@ predicted_damages <- predict(quadmodel, list(warming=warming_values, warming2=wa
 plot(damages$warming, damages$damages) +
   lines(warming_values, predicted_damages, col='blue')
 
+# From Ian
+damages_model <- function(x) {
+  quadmodel$coefficients[[1]]*x + quadmodel$coefficients[[2]]*(x^2)
+}
+
 #exploratory ggplot
 ggplot(data = damages, aes(x = warming, y = damages)) +
   geom_point(alpha = .5,
@@ -48,7 +53,8 @@ ggplot(data = damages, aes(x = warming, y = damages)) +
               color = "darkred",
               ) +
     labs(y = "Financial Damages ($)", title = "Estimated annual total damages from climate change based on warming", x = "Degrees of Warming (C)") +
-    theme_minimal() 
+    theme_minimal() +
+  stat_function(fun = damages_model, size = 1)
 
 ```
 
@@ -62,32 +68,155 @@ a <- quadmodel$coefficients[[1]]
 b <- quadmodel$coefficients[[2]]
 
 #create function
-base_damage <- function(x, quadmodel) {
-  baseline_damage <- quadmodel$coefficients[[1]]*x + quadmodel$coefficients[[2]]*x^2
+base_damage <- function(x) {
+  baseline_damage <- quadmodel$coefficients[[1]]*x + quadmodel$coefficients[[2]]*(x^2)
   return(baseline_damage)
 }
 
+#Ian
+damages_model <- function(x) {
+  quadmodel$coefficients[[1]]*x + quadmodel$coefficients[[2]]*(x^2)
+}
+
 #test fuction - create vector
-base_damage(warming$warming_baseline, quadmodel)
+base_damage(warming$warming_baseline)
 
 #convert vector to variable in warming dataset
-warming$damages_baseline <- base_damage(warming$warming_baseline, quadmodel)
+warming$damages_baseline <- base_damage(warming$warming_baseline)
 
 
 #Damages WITH pulse
 
 #create function
-pul_damage <- function(x, quadmodel) {
+pul_damage <- function(x) {
   pulse_damage <- quadmodel$coefficients[[1]]*x + quadmodel$coefficients[[2]]*x^2
   return(pulse_damage)
 }
 
 #test fuction - create vector
-pul_damage(warming$warming_pulse, quadmodel)
+pul_damage(warming$warming_pulse)
 
 #convert vector to variable in warming dataset
-warming$damages_pulse <- pul_damage(warming$warming_pulse, quadmodel)
+warming$damages_pulse <- pul_damage(warming$warming_pulse)
 
+
+#Difference between pulse and basline
+warming$damages_diff <- warming$damages_pulse - warming$damages_baseline
+
+#Difference per ton
+warming$damages_ton <- warming$damages_diff/35e9
+
+
+plot(warming$year, warming$damages_baseline)
+```
+
+
+
+### 3. Calculate the SCC
+The SCC is the present discounted value of the stream of future damages caused by one
+additional ton of CO2. The Obama Administration used a discount rate of 3% to discount
+damages. Recently, New York State used a discount rate of 2%. Calculate and make a plot of
+the SCC (y-axis) against the discount rate (x-axis) for a reasonable range of discount rates.
+
+SCC = PV(pulse damages) - PV(baseline damages)
+
+PV = Xt / (1+r)^t
+
+```{r}
+# Calculate PV using ~for loop~
+PV_calc <- function(values, discount_rate) {
+  sum <- 0;
+  r <- discount_rate
+  for (i in c(1:length(values))) {
+    current <- values[i]/(1 + r)^i
+    sum <- sum + current
+  }
+  return(sum)
+}
+
+# Defining "reasonable" range of discount rate
+discount_rates <- seq(.01,.1,.005)
+
+# Calculate SCC values at determined discount rates
+SCC_values <- PV_calc(warming$damages_ton, discount_rates)
+
+# Store as data frame
+SCC_data <- data.frame(discount_rates, SCC_values)
+
+SCC_data
+
+ggplot(data = SCC_data, aes(x = discount_rates, y = SCC_values)) +
+  geom_line(alpha = .2,
+              width = 1.5,
+              size = 2,
+              color = "darkred",
+              ) +
+    labs(y = "", title = "SCC: Present discounted value of future damages caused per
+additional ton of CO2", x = "") +
+    theme_minimal() +
+  geom_point(aes(x=0.021, y=70.65026))
+```
+4. Ramsey's Rule
+```{r}
+#Ramsey's Rule: discount rate
+r <- .001 + 2*.01
+r
+
+#SCC at discount rate of .021 (Ramsey's Rule)
+PV_calc(warming$damages_ton, .021)
+
+```
+
+### 5. Policy A vs. Policy B
+
+What is the expected present value of damages up to 2100 under Policy A? What is the
+expected present value of damages up to 2100 under Policy B? Suppose undertaking Policy
+A costs zero and undertaking Policy B costs X. How large could X be for it to still make
+economic sense to pursue Policy B instead of Policy A? Qualitatively, how would your answer
+change if society were risk averse?
+
+```{r}
+#Policy A
+
+#Calculate PV using ~for loop~
+PV_calc <- function(values, discount_rate) {
+  sum <- 0;
+  r <- discount_rate
+  for (i in c(1:length(values))) {
+    current <- values[i]/(1 + r)^i
+    sum <- sum + current
+  }
+  return(sum)
+}
+
+#Create new variable for 1.5x baseline in policy A
+warming$baseline150 <- warming$warming_baseline*1.5
+
+#Create new variable for damages under 1.5 baseline outcome
+warming$damages_baseline150 <- damages_model(warming$baseline150)
+
+#Calculate PV of each outcome in policy A
+A_baseline <- PV_calc(warming$damages_baseline, 0.02)
+A_baseline150 <- PV_calc(warming$damages_baseline150, 0.02)
+
+expected_value <- .5*A_baseline + .5*A_baseline150
+expected_value
+
+
+#Policy B
+
+#Create new variable for warming until 2050
+warming <- warming %>% 
+  mutate(warming_baseline_2050 = 
+           case_when(year > 2050 ~ 1.29,
+                     TRUE ~ warming_baseline
+          ))
+
+#Create new variable for damages under 2050 baseline outcome
+warming$damages_baseline2050 <- damages_model(warming$warming_baseline_2050)
+
+#Calculate PV of policy B
+B_baseline <- PV_calc(warming$damages_baseline2050, 0.02)
 
 ```
 
