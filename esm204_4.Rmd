@@ -5,18 +5,21 @@ date: "5/17/2021"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(janitor)
 library(here)
+library(stargazer)
+library(broom)
 options(scipen = 0)
 ```
 
 
 ### 1. Quadratic Damage Function 
+Using damages.csv, estimate a quadratic damage function relating the dollar value of damages to the change in global mean temperature. Omit an intercept term; damages by construction must equal zero when there is no climate change. Plot your estimated damage function, overlaid with a scatterplot of the underlying data.
 
-```{r}
+```{r, include=FALSE, warning=FALSE, message=F}
 # Read in data
 warming <- read.csv("warming.csv")
 damages <- read.csv("damages.csv")
@@ -45,10 +48,12 @@ damages_model <- function(x) {
   quadmodel$coefficients[[1]]*x + quadmodel$coefficients[[2]]*(x^2)
 }
 
-#exploratory ggplot
+```
+
+```{r, echo=FALSE, message=F}
+#ggplot
 ggplot(data = damages, aes(x = warming, y = damages)) +
   geom_point(alpha = .5,
-              width = 1.5,
               size = 2,
               color = "darkred",
               ) +
@@ -59,8 +64,9 @@ ggplot(data = damages, aes(x = warming, y = damages)) +
 ```
 
 ### 2. Damages in each year under the baseline climate and pulse scenarios
+Use warming.csv and your estimated damage function to predict damages in each year under the baseline climate and the pulse scenario. Make four plots: (1) damages over time without the pulse, (2) damages over time with the pulse, (3) the difference in damages over time that arises from the pulse, and (4) the difference in damages over time from the pulse per ton of CO2 (you can assume that each ton of the pulse causes the same amount of damage).
 
-```{r}
+```{r, include=FALSE, message=F}
 #Damages WITHOUT pulse
 
 # Name coefficients
@@ -113,19 +119,52 @@ plot(warming$year, warming$damages_diff)
 plot(warming$year, warming$damages_ton)
 ```
 
+```{r, echo=F}
+#ggplot - baseline
+ggplot(data = warming, aes(x = year, y = damages_baseline)) +
+  geom_point(alpha = .5,
+              size = 2,
+              color = "blue",
+              ) +
+    labs(y = "Financial Damages ($)", title = "Estimated annual total damages from climate change in baseline scenario", x = "Year") +
+    theme_minimal()
 
+#ggplot - pulse
+ggplot(data = warming, aes(x = year, y = damages_pulse)) +
+  geom_point(alpha = .5,
+              size = 2,
+              color = "blue",
+              ) +
+    labs(y = "Financial Damages ($)", title = "Estimated annual total damages from climate change in pulse scenario", x = "Year") +
+    theme_minimal()
+
+#ggplot - difference
+ggplot(data = warming, aes(x = year, y = damages_diff)) +
+  geom_point(alpha = 1,
+              size = 1,
+              color = "darkorange",
+              ) +
+    labs(y = "Financial Damages ($)", title = "Differences in damages over time between baseline and pulse scenarios", x = "Year") +
+    theme_minimal()
+
+#ggplot - per ton
+ggplot(data = warming, aes(x = year, y = damages_ton)) +
+  geom_point(alpha = 1,
+              size = 1,
+              color = "blue",
+              ) +
+    labs(y = "Financial Damages ($)", title = "Difference in damages over time from the pulse per ton of
+CO2", x = "Year") +
+    theme_minimal()
+```
 
 ### 3. Calculate the SCC
-The SCC is the present discounted value of the stream of future damages caused by one
-additional ton of CO2. The Obama Administration used a discount rate of 3% to discount
-damages. Recently, New York State used a discount rate of 2%. Calculate and make a plot of
-the SCC (y-axis) against the discount rate (x-axis) for a reasonable range of discount rates.
+The SCC is the present discounted value of the stream of future damages caused by one additional ton of CO2. The Obama Administration used a discount rate of 3% to discount damages. Recently, New York State used a discount rate of 2%. Calculate and make a plot of the SCC (y-axis) against the discount rate (x-axis) for a reasonable range of discount rates.
 
-SCC = PV(pulse damages) - PV(baseline damages)
+```{r, echo = F}
+#SCC = PV(pulse damages) - PV(baseline damages)
+#PV = Xt / (1+r)^t
 
-PV = Xt / (1+r)^t
-
-```{r}
 # Calculate PV using ~for loop~
 PV_calc <- function(values, discount_rate) {
   sum <- 0;
@@ -146,28 +185,32 @@ SCC_values <- PV_calc(warming$damages_ton, discount_rates)
 # Store as data frame
 SCC_data <- data.frame(discount_rates, SCC_values)
 
-SCC_data
-
+# ggplot of SCC values at various discount rates
 ggplot(data = SCC_data, aes(x = discount_rates, y = SCC_values)) +
-  geom_line(alpha = .2,
-              width = 1.5,
-              size = 2,
-              color = "darkred",
+  geom_line(alpha = .9,
+              size = 1,
+              color = "darkgray",
               ) +
-    labs(y = "", title = "SCC: Present discounted value of future damages caused per
-additional ton of CO2", x = "") +
+    labs(y = "SCC Value ($)", title = "Social Cost of Carbon (SCC) per ton of CO2 at various discount rates", x = "Discount Rate (0-10%)") +
     theme_minimal() +
-  geom_point(aes(x=0.021, y=70.65026))
+  annotate(geom = "point", x=0.021, y=70.65026, shape = "circle", color = "darkred", size = 3) +
+    annotate("text", x=0.035, y=70.65026, label = "SCC w/ Ramsey's Rule", size = 3.5) +
+  geom_segment(aes(x=0, xend=.021, y=70.65026, yend=70.65026), colour="darkred", linetype = "dashed") +
+    geom_segment(aes(x=.021, xend=.021, y=0, yend=70.65026), colour="darkred", linetype = "dashed")
+
 ```
-4. Ramsey's Rule
+
+
+### 4. Ramsey's Rule
+The National Academies of Sciences, Engineering, and Medicine advised the government in a 2017 report to use the Ramsey Rule when discounting within the SCC calculation: r = ρ + ηg
+Using ρ = 0.001, η = 2, and g = 0.01, what is the SCC? Locate this point on your graph from above.
+
 ```{r}
 #Ramsey's Rule: discount rate
 r <- .001 + 2*.01
-r
 
 #SCC at discount rate of .021 (Ramsey's Rule)
 PV_calc(warming$damages_ton, .021)
-
 ```
 
 ### 5. Policy A vs. Policy B
