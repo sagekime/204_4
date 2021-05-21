@@ -60,8 +60,10 @@ ggplot(data = damages, aes(x = warming, y = damages)) +
     labs(y = "Financial Damages ($)", title = "Estimated annual total damages from climate change based on warming", x = "Degrees of Warming (C)") +
     theme_minimal() +
   stat_function(fun = damages_model, size = 1)
-
 ```
+
+**Quadratic Damage Function: y = -1.035e12x + 1.94e13x^2**
+
 
 ### 2. Damages in each year under the baseline climate and pulse scenarios
 Use warming.csv and your estimated damage function to predict damages in each year under the baseline climate and the pulse scenario. Make four plots: (1) damages over time without the pulse, (2) damages over time with the pulse, (3) the difference in damages over time that arises from the pulse, and (4) the difference in damages over time from the pulse per ton of CO2 (you can assume that each ton of the pulse causes the same amount of damage).
