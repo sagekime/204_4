@@ -199,7 +199,7 @@ PV_calc(warming$damages_ton, .021)</code></pre>
 </div>
 <div id="policy-a-vs.-policy-b" class="section level3">
 <h3>5. Policy A vs. Policy B</h3>
-<p>What is the expected present value of damages up to 2100 under Policy A? What is the expected present value of damages up to 2100 under Policy B? Suppose undertaking Policy A costs zero and undertaking Policy B costs X. How large could X be for it to still make economic sense to pursue Policy B instead of Policy A? Qualitatively, how would your answer change if society were risk averse?</p>
+<p>What is the expected present value of damages up to 2100 under Policy A?</p>
 <pre class="r"><code>#Policy A
 
 #Calculate PV using ~for loop~
@@ -226,6 +226,7 @@ A_baseline150 &lt;- PV_calc(warming$damages_baseline150, 0.02)
 expected_value &lt;- .5*A_baseline + .5*A_baseline150
 expected_value</code></pre>
 <pre><code>## [1] 3.034025e+15</code></pre>
+<p>What is the expected present value of damages up to 2100 under Policy B?</p>
 <pre class="r"><code>#Policy B
 
 #Create new variable for warming until 2050
@@ -240,12 +241,14 @@ warming$damages_baseline2050 &lt;- damages_model(warming$warming_baseline_2050)
 
 #Calculate PV of policy B
 B_baseline &lt;- PV_calc(warming$damages_baseline2050, 0.02) #PV is expected value bc only one option
-
-
-#Subtract cost of policy A - policy B (SOS - CHECK THIS)
+B_baseline</code></pre>
+<pre><code>## [1] 7.782494e+14</code></pre>
+<p>Suppose undertaking Policy A costs zero and undertaking Policy B costs X. How large could X be for it to still make economic sense to pursue Policy B instead of Policy A? Qualitatively, how would your answer change if society were risk averse?</p>
+<pre class="r"><code>#Subtract cost of policy A - policy B
 max_x &lt;- expected_value - B_baseline
 max_x</code></pre>
 <pre><code>## [1] 2.255776e+15</code></pre>
+<p>If society were risk averse</p>
 </div>
 
 
