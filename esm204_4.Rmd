@@ -1,11 +1,8 @@
 ---
 title: 'ESM 204 #4'
-author: "Sage Kime and Karla Garibay Garcia and Craig Stuart"
+author: "Sage Kime, Karla Garibay Garcia, and Craig Stuart"
 date: "5/26/2021"
-output:
-  html_document: default
-  pdf_document: default
-code_folding: hide
+output: html_document
 ---
 
 ```{r setup, include=FALSE, warning=FALSE}
