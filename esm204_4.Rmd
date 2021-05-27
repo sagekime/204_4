@@ -3,6 +3,8 @@ title: 'ESM 204 #4'
 author: "Sage Kime and Karla Garibay Garcia"
 date: "5/17/2021"
 output: html_document
+code_folding: hide
+
 ---
 
 ```{r setup, include=FALSE, warning=FALSE}
