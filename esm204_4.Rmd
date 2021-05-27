@@ -1,10 +1,11 @@
 ---
 title: 'ESM 204 #4'
-author: "Sage Kime and Karla Garibay Garcia"
-date: "5/17/2021"
-output: html_document
+author: "Sage Kime and Karla Garibay Garcia and Craig Stuart"
+date: "5/26/2021"
+output:
+  html_document: default
+  pdf_document: default
 code_folding: hide
-
 ---
 
 ```{r setup, include=FALSE, warning=FALSE}
@@ -278,5 +279,4 @@ max_x
 
 Qualitatively, how would your answer change if society were risk averse?
 
-Craig's best guess, but let's please discuss this more:
-If society were risk averse, X would have to be less than the max because the expected utility of Policy A would be less than the utility of Policy B. 
+In the risk neutral society when the cost of both policies are equal, the expected utility of Policy A would be equal to the utility of Policy B. When society is risk averse, the utility of Policy B is greater than the expected utility of Policy A, therefore society would be more likely to choose Policy B. 
