@@ -251,7 +251,7 @@ expected_value
 
 What is the expected present value of damages up to 2100 under Policy B? 
 
-```{r, echo=FALSE}
+```{r}
 #Policy B
 
 #Create new variable for warming until 2050
