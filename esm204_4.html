@@ -425,6 +425,21 @@ expected_value &lt;- .5*A_baseline + .5*A_baseline150
 expected_value</code></pre>
 <pre><code>## [1] 3.034025e+15</code></pre>
 <p>What is the expected present value of damages up to 2100 under Policy B?</p>
+<pre class="r"><code>#Policy B
+
+#Create new variable for warming until 2050
+warming &lt;- warming %&gt;% 
+  mutate(warming_baseline_2050 = 
+           case_when(year &gt; 2050 ~ 1.29,
+                     TRUE ~ warming_baseline
+          ))
+
+#Create new variable for damages under 2050 baseline outcome
+warming$damages_baseline2050 &lt;- damages_model(warming$warming_baseline_2050)
+
+#Calculate PV of policy B
+B_baseline &lt;- PV_calc(warming$damages_baseline2050, 0.02) #PV is expected value bc only one option
+B_baseline</code></pre>
 <pre><code>## [1] 7.782494e+14</code></pre>
 <p>Suppose undertaking Policy A costs zero and undertaking Policy B costs X. How large could X be for it to still make economic sense to pursue Policy B instead of Policy A?</p>
 <pre class="r"><code>#Subtract cost of policy A - policy B
