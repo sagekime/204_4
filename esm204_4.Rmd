@@ -279,4 +279,4 @@ max_x
 
 Qualitatively, how would your answer change if society were risk averse?
 
-In the risk neutral society when the cost of both policies are equal, the expected utility of Policy A would be equal to the utility of Policy B. When society is risk averse, the utility of Policy B is greater than the expected utility of Policy A, therefore society would be more likely to choose Policy B. 
+In the risk neutral society when the cost of both policies are equal, the expected utility of Policy A would be equal to the utility of Policy B - therefore, society is indifferent between choices. When society is risk averse, the utility of Policy B is greater than the expected utility of Policy A - therefore, society is more likely to choose Policy B because it has a more certain outcome.
