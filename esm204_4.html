@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Sage Kime and Karla Garibay Garcia" />
+<meta name="author" content="Sage Kime and Karla Garibay Garcia and Craig Stuart" />
 
 
 <title>ESM 204 #4</title>
@@ -165,8 +165,8 @@ pre code {
 
 
 <h1 class="title toc-ignore">ESM 204 #4</h1>
-<h4 class="author">Sage Kime and Karla Garibay Garcia</h4>
-<h4 class="date">5/17/2021</h4>
+<h4 class="author">Sage Kime and Karla Garibay Garcia and Craig Stuart</h4>
+<h4 class="date">5/26/2021</h4>
 
 </div>
 
@@ -243,12 +243,13 @@ warming$damages_baseline2050 &lt;- damages_model(warming$warming_baseline_2050)
 B_baseline &lt;- PV_calc(warming$damages_baseline2050, 0.02) #PV is expected value bc only one option
 B_baseline</code></pre>
 <pre><code>## [1] 7.782494e+14</code></pre>
-<p>Suppose undertaking Policy A costs zero and undertaking Policy B costs X. How large could X be for it to still make economic sense to pursue Policy B instead of Policy A? Qualitatively, how would your answer change if society were risk averse?</p>
+<p>Suppose undertaking Policy A costs zero and undertaking Policy B costs X. How large could X be for it to still make economic sense to pursue Policy B instead of Policy A?</p>
 <pre class="r"><code>#Subtract cost of policy A - policy B
 max_x &lt;- expected_value - B_baseline
 max_x</code></pre>
 <pre><code>## [1] 2.255776e+15</code></pre>
-<p>Craig’s best guess, but let’s please discuss this more: If society were risk averse, X would have to be less than the max because the expected utility of Policy A would be less than the utility of Policy B.</p>
+<p>Qualitatively, how would your answer change if society were risk averse?</p>
+<p>In the risk neutral society when the cost of both policies are equal, the expected utility of Policy A would be equal to the utility of Policy B. When society is risk averse, the utility of Policy B is greater than the expected utility of Policy A, therefore society would be more likely to choose Policy B.</p>
 </div>
 
 

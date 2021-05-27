@@ -1,8 +1,10 @@
 ---
 title: 'ESM 204 #4'
-author: "Sage Kime and Karla Garibay Garcia"
-date: "5/17/2021"
+author: "Sage Kime and Karla Garibay Garcia and Craig Stuart"
+date: "5/26/2021"
 output: html_document
+code_folding: hide
+
 ---
 
 ```{r setup, include=FALSE, warning=FALSE}
@@ -267,13 +269,13 @@ B_baseline <- PV_calc(warming$damages_baseline2050, 0.02) #PV is expected value 
 B_baseline
 ```
 
-Suppose undertaking Policy A costs zero and undertaking Policy B costs X. How large could X be for it to still make economic sense to pursue Policy B instead of Policy A? Qualitatively, how would your answer change if society were risk averse?
-
+Suppose undertaking Policy A costs zero and undertaking Policy B costs X. How large could X be for it to still make economic sense to pursue Policy B instead of Policy A? 
 ```{r}
 #Subtract cost of policy A - policy B
 max_x <- expected_value - B_baseline
 max_x
 ```
 
-Craig's best guess, but let's please discuss this more:
-If society were risk averse, X would have to be less than the max because the expected utility of Policy A would be less than the utility of Policy B. 
+Qualitatively, how would your answer change if society were risk averse?
+
+In the risk neutral society when the cost of both policies are equal, the expected utility of Policy A would be equal to the utility of Policy B. When society is risk averse, the utility of Policy B is greater than the expected utility of Policy A, therefore society would be more likely to choose Policy B. 
